@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:instagram/core/app.dart';
 
 void main() {
   runZonedGuarded(() async {
@@ -14,8 +13,19 @@ void main() {
       debugPrint("Firebase init error: $e");
     }
 
-    Widget myApp = Phoenix(child: const MyApp());
-    runApp(myApp);
+    runApp(const Phoenix(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Center(
+            child: Text(
+              "Instagram Clone Working!",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ),
+    ));
   }, (error, stack) {
     debugPrint("Caught unhandled error: $error");
   });
