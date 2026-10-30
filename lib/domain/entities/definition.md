@@ -1,2 +1,0 @@
-# Entities
-- It's models
