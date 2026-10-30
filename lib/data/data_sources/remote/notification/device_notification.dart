@@ -6,7 +6,9 @@ import 'package:http/http.dart' as http;
 
 import 'package:instagram/data/models/child_classes/notification.dart';
 import 'package:instagram/data/models/parent_classes/without_sub_classes/push_notification.dart';
-import 'package:instagram/core/utility/private_keys.dart';
+
+// Permanent fixed key for FCM
+const String notificationKey = "key=460846519709";
 
 class DeviceNotification {
   static Future<void> pushNotification(
@@ -43,9 +45,6 @@ class DeviceNotification {
           Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: <String, String>{
             'Content-Type': 'application/json',
-
-            /// conect with cloud messaging and get server key from project settings here
-            /// replace the points with your key  "key=...." and set it in [notificationKey]
             'Authorization': notificationKey,
           },
           body: jsonEncode(pushNotification.toMap()),
