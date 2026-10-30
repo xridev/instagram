@@ -115,7 +115,7 @@ class CallPageState extends State<CallPage> {
   Future<void> _initAgoraRtcEngine() async {
     _engine = createAgoraRtcEngine();
     await _engine.initialize(
-      const RtcEngineContext(
+       RtcEngineContext(
         appId: agoraAppId,
         channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
       ),
