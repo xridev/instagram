@@ -4,7 +4,6 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:instagram/core/resources/color_manager.dart';
 import 'package:instagram/core/resources/styles_manager.dart';
 import 'package:instagram/core/utility/constant.dart';
-import 'package:instagram/core/utility/private_keys.dart';
 import 'package:instagram/data/models/parent_classes/without_sub_classes/user_personal_info.dart';
 import 'package:instagram/presentation/cubit/callingRooms/calling_rooms_cubit.dart';
 import 'package:instagram/presentation/cubit/firestoreUserInfoCubit/user_info_cubit.dart';
@@ -42,6 +41,10 @@ class CallPageState extends State<CallPage> {
 
   late RtcEngine _engine;
   late UserPersonalInfo myPersonalInfo;
+
+  // Agora App ID injected directly
+  final String agoraAppId = "Dd73bf7398374a949d5c8d8e37ce6c76";
+
   @override
   void dispose() {
     _users.clear();
@@ -77,10 +80,6 @@ class CallPageState extends State<CallPage> {
   Future<void> _handleCameraAndMic(Permission permission) async =>
       await permission.request();
 
-  /// Create your own app id with agora with "testing mode"
-  /// it's very simple, just go to https://www.agora.io/en/ and create your own project and get your own app id in [agoraAppId]
-  /// Again, don't make it with secure mode ,You will lose the creation of several channels.
-  /// Make it with "testing mode"
   Future<void> initialize() async {
     if (agoraAppId.isEmpty) {
       setState(() {
@@ -94,7 +93,7 @@ class CallPageState extends State<CallPage> {
 
     await _initAgoraRtcEngine();
     _addAgoraEventHandlers();
-    const VideoEncoderConfiguration configuration = VideoEncoderConfiguration(
+    VideoEncoderConfiguration configuration = const VideoEncoderConfiguration(
       dimensions: VideoDimensions(width: 1920, height: 1080),
     );
 
@@ -115,7 +114,7 @@ class CallPageState extends State<CallPage> {
   Future<void> _initAgoraRtcEngine() async {
     _engine = createAgoraRtcEngine();
     await _engine.initialize(
-       RtcEngineContext(
+      RtcEngineContext(
         appId: agoraAppId,
         channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
       ),
@@ -156,10 +155,6 @@ class CallPageState extends State<CallPage> {
             _users.remove(remoteUid);
           });
         },
-        // onTokenPrivilegeWillExpire: (RtcConnection connection, String token) {
-        //   debugPrint(
-        //       '[onTokenPrivilegeWillExpire] connection: ${connection.toJson()}, token: $token');
-        // },
       ),
     );
   }
@@ -385,10 +380,10 @@ class CallPageState extends State<CallPage> {
                           alignment: Alignment.bottomRight,
                           child: buildCircleAvatar(0, 700),
                         ),
-                        Positioned(
+                        const Positioned(
                             height: -15,
                             left: -10,
-                            child: buildCircleAvatar(1, 700)),
+                            child: SizedBox()), // Fixed positioning syntax
                       ],
                       const SizedBox(height: 30),
                       ...List.generate(numOfUsers!, (index) {
