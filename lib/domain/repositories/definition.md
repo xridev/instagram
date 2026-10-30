@@ -1,1 +1,0 @@
-- It's just interface to repositiry in data layer
