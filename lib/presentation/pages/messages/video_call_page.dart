@@ -115,7 +115,7 @@ class CallPageState extends State<CallPage> {
     _engine = createAgoraRtcEngine();
     await _engine.initialize(
       RtcEngineContext(
-        appId: agoraAppId ="Dd73bf7398374a949d5c8d8e37ce6c76";
+        appId: agoraAppId,
         channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
       ),
     );
@@ -374,7 +374,7 @@ class CallPageState extends State<CallPage> {
                   children: [
                     if (widget.usersInfo != null) ...[
                       if (numOfUsers == 1) ...[
-                        buildCircleAvatar(0, 100,
+                        buildCircleAvatar(0, 100),
                       ] else if (numOfUsers != 0) ...[
                         Align(
                           alignment: Alignment.bottomRight,
@@ -416,4 +416,4 @@ class CallPageState extends State<CallPage> {
       showColorfulCircle: false,
     );
   }
-                    }
+}
