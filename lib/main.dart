@@ -6,8 +6,12 @@ import 'package:instagram/core/app.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Firebase options chara basic initialize kora
-  await Firebase.initializeApp();
+  try {
+    // Firebase initialization safe korar jonno try-catch
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint("Firebase initialization failed: $e");
+  }
 
   Widget myApp = Phoenix(child: const MyApp());
   runApp(myApp);
