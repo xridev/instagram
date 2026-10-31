@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:instagram/config/themes/app_theme.dart';
 import 'package:instagram/config/themes/theme_service.dart';
-import 'package:instagram/core/functions/initial_function.dart';
-import 'package:instagram/core/resources/assets_manager.dart';
-import 'package:instagram/core/resources/color_manager.dart';
 import 'package:instagram/core/translations/app_lang.dart';
 import 'package:instagram/core/translations/translations.dart';
 import 'package:instagram/core/utility/constant.dart';
@@ -36,49 +33,9 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
           themeMode: ThemeOfApp.theme,
-          home: const InitialSplashScreen(),
+          home: const LoginPage(), // Direct login page call kora holo
         );
       },
-    );
-  }
-}
-
-class InitialSplashScreen extends StatefulWidget {
-  const InitialSplashScreen({super.key});
-
-  @override
-  State<InitialSplashScreen> createState() => _InitialSplashScreenState();
-}
-
-class _InitialSplashScreenState extends State<InitialSplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _navigateToNextScreen();
-  }
-
-  void _navigateToNextScreen() async {
-    await Future.delayed(const Duration(milliseconds: 800));
-
-    if (!mounted) return;
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorManager.white,
-      body: Center(
-        child: Image.asset(
-          IconsAssets.splashIcon,
-          width: 100,
-          height: 100,
-        ),
-      ),
     );
   }
 }
