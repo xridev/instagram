@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.example.instagram"
-    compileSdk = 37
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -30,7 +30,7 @@ android {
     defaultConfig {
         applicationId = "com.example.instagram"
         minSdk = flutter.minSdkVersion
-        targetSdk = 37
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
