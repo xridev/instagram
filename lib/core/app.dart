@@ -52,11 +52,18 @@ class MyApp extends StatelessWidget {
 }
 
 Future<Widget> screenFunction() async {
-  String? myId = await initializeDefaultValues();
+  try {
+    String? myId = await initializeDefaultValues().timeout(
+      const Duration(seconds: 3),
+      onTimeout: () => null,
+    );
 
-  return myId == null
-      ? const LoginPage()
-      : GetMyPersonalInfo(myPersonalId: myId);
+    return myId == null
+        ? const LoginPage()
+        : GetMyPersonalInfo(myPersonalId: myId);
+  } catch (e) {
+    return const LoginPage();
+  }
 }
 
 void _defineThePlatform(BuildContext context) {
