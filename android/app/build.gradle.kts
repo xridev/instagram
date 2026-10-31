@@ -70,3 +70,14 @@ dependencies {
 
     implementation("androidx.multidex:multidex:2.0.1")
 } 
+
+subprojects {
+    afterEvaluate {
+        if (project.hasProperty("android")) {
+            val androidObj = project.extensions.findByName("android") as? com.android.build.gradle.BaseExtension
+            androidObj?.apply {
+                compileSdkVersion(35)
+            }
+        }
+    }
+}
