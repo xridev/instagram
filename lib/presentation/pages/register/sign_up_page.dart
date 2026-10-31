@@ -41,7 +41,7 @@ class _SignUpPageState extends State<SignUpPage> {
       customTextButton: customTextButton(),
       emailController: emailController,
       passwordController: passwordController,
-      isThatLogIn: true,
+      isThatLogIn: false,
       validateEmail: validateEmail,
       validatePassword: validatePassword,
       rememberPassword: rememberPassword,
@@ -285,7 +285,7 @@ class _UserNamePageState extends State<UserNamePage> {
             isItDone: authState is! CubitAuthConfirming,
             nameOfButton: StringsManager.signUp.tr,
             blueColor: validateEdits,
-            onPressed: () async {
+            esse: () async {
               FirebaseAuthCubit authCubit = FirebaseAuthCubit.get(context);
 
               if (validateEdits) {
