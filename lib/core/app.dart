@@ -9,7 +9,6 @@ import 'package:instagram/core/translations/app_lang.dart';
 import 'package:instagram/core/translations/translations.dart';
 import 'package:instagram/core/utility/constant.dart';
 import 'package:instagram/presentation/pages/register/login_page.dart';
-import 'package:instagram/presentation/pages/register/widgets/get_my_user_info.dart';
 import 'package:instagram/presentation/widgets/global/others/multi_bloc_provider.dart';
 
 class MyApp extends StatelessWidget {
@@ -59,12 +58,14 @@ class _InitialSplashScreenState extends State<InitialSplashScreen> {
   }
 
   void _navigateToNextScreen() async {
-    // Web platform-e initialization hang kora avoid korar jonno choto delay
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 800));
 
     if (!mounted) return;
 
-    Get.off(() => const LoginPage(), transition: Transition.noTransition);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
   }
 
   @override
