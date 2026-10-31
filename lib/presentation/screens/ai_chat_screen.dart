@@ -9,52 +9,86 @@ class AiChatScreen extends StatefulWidget {
 
 class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+
+  // 📂 Local Chat History List (Ekhane chat messages guli local memory-te store thakbe)
   final List<ChatMessage> _messages = [
-    ChatMessage(text: "Hello Xriyan! Ami apnar Xrinet AI companion. Ajke ki niye kotha bolbo?", isUser: false),
+    ChatMessage(
+      text: "Hello Xriyan! Ami apnar Xrinet AI companion. Ajke ki niye kotha bolbo?",
+      isUser: false,
+      timestamp: DateTime.now(),
+    ),
   ];
 
   void _sendMessage() {
     if (_controller.text.trim().isEmpty) return;
 
-    setState(() {
-      _messages.add(ChatMessage(text: _controller.text, isUser: true));
-      String userText = _controller.text;
-      _controller.clear();
+    String userText = _controller.text;
+    _controller.clear();
 
-      // Simulated AI Reply (Pore ekhane actual AI model ba API connect hobe)
-      Future.delayed(const Duration(milliseconds: 800), () {
-        setState(() {
-          _messages.add(ChatMessage(
-            text: "Bujhte perechi! '$userText' niye amra khub siggir-i kaj shuru korbo.",
+    setState(() {
+      // User message history-te add holo
+      _messages.add(
+        ChatMessage(
+          text: userText,
+          isUser: true,
+          timestamp: DateTime.now(),
+        ),
+      );
+    });
+
+    _scrollToBottom();
+
+    // Future-e ekhane real API ba response integration kora jabe
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (!mounted) return;
+      setState(() {
+        _messages.add(
+          ChatMessage(
+            text: "Bujhte perechi! '$userText' er byapare porobortite API connect kore dewa hobe.",
             isUser: false,
-          ));
-        });
+            timestamp: DateTime.now(),
+          ),
+        );
       });
+      _scrollToBottom();
+    });
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F0F), // Dark Cyberpunk Vibe
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1A1A),
-        elevation: 1,
+        backgroundColor: Colors.black,
+        elevation: 0.5,
         title: Row(
           children: [
             Stack(
               children: [
                 const CircleAvatar(
                   radius: 18,
-                  backgroundColor: Colors.deepPurple,
-                  child: Icon(Icons.bolt, color: Colors.white, size: 20),
+                  backgroundColor: Color(0xFF262626),
+                  child: Icon(Icons.bolt, color: Colors.blueAccent, size: 20),
                 ),
                 Positioned(
                   bottom: 0,
                   right: 0,
                   child: Container(
-                    width: 10,
-                    height: 10,
+                    width: 9,
+                    height: 9,
                     decoration: const BoxDecoration(
                       color: Colors.greenAccent,
                       shape: BoxShape.circle,
@@ -69,11 +103,11 @@ class _AiChatScreenState extends State<AiChatScreen> {
               children: const [
                 Text(
                   "Xrinet AI",
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
                 ),
                 Text(
-                  "Online & Ready",
-                  style: TextStyle(color: Colors.greenAccent, fontSize: 11),
+                  "Active now",
+                  style: TextStyle(color: Colors.grey, fontSize: 11),
                 ),
               ],
             ),
@@ -83,10 +117,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
       ),
       body: Column(
         children: [
-          // Chat Messages List
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
                 final message = _messages[index];
@@ -94,34 +128,46 @@ class _AiChatScreenState extends State<AiChatScreen> {
               },
             ),
           ),
-
           // Bottom Input Bar
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            color: const Color(0xFF1A1A1A),
+            color: Colors.black,
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.mic_rounded, color: Colors.deepPurpleAccent),
-                  onPressed: () {
-                    // Voice note recording action
-                  },
+                  icon: const Icon(Icons.mic_rounded, color: Colors.white70),
+                  onPressed: () {},
                 ),
                 Expanded(
-                  chno: TextField(
-                    controller: _controller,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: "Ask Xrinet AI anything...",
-                      hintStyle: TextStyle(color: Colors.grey[600]),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF262626),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      decoration: InputDecoration(
+                        hintText: "Message Xrinet AI...",
+                        hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (_) => _sendMessage(),
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.send_rounded, color: Colors.blueAccent),
-                  onPressed: _sendMessage,
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: _sendMessage,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: const BoxDecoration(
+                      color: Colors.blueAccent,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+                  ),
                 ),
               ],
             ),
@@ -132,15 +178,18 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 }
 
-// Model for Chat Message
 class ChatMessage {
   final String text;
   final bool isUser;
+  final DateTime timestamp;
 
-  ChatMessage({required this.text, required this.isUser});
+  ChatMessage({
+    required this.text,
+    required this.isUser,
+    required this.timestamp,
+  });
 }
 
-// Chat Bubble Widget
 class ChatBubble extends StatelessWidget {
   final ChatMessage message;
 
@@ -150,13 +199,13 @@ class ChatBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
-      container(
-        margin: const EdgeInsets.symmetric(vertical: 6),
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
         decoration: BoxDecoration(
-          color: message.isUser ? const Color(0xFF2563EB) : const Color(0xFF262626),
-          borderRadius: BorderRadius.circular(16),
+          color: message.isUser ? const Color(0xFF00378B) : const Color(0xFF262626),
+          borderRadius: BorderRadius.circular(18),
         ),
         child: Text(
           message.text,
