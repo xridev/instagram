@@ -13,7 +13,7 @@ void main() {
       debugPrint("Firebase init error: $e");
     }
 
-    runApp(const Phoenix(
+    runApp(Phoenix(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
