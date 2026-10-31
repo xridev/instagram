@@ -14,7 +14,7 @@ void main() {
       debugPrint("Firebase init error: $e");
     }
 
-    runApp(const Phoenix(
+    runApp(Phoenix(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: LoginScreen(), // Ekhane test screen-er bodole LoginScreen boshano holo
