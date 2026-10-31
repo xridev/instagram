@@ -285,7 +285,7 @@ class _UserNamePageState extends State<UserNamePage> {
             isItDone: authState is! CubitAuthConfirming,
             nameOfButton: StringsManager.signUp.tr,
             blueColor: validateEdits,
-            esse: () async {
+            onPressed: () async {
               FirebaseAuthCubit authCubit = FirebaseAuthCubit.get(context);
 
               if (validateEdits) {
