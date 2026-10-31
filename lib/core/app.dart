@@ -1,4 +1,3 @@
-import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:instagram/config/themes/app_theme.dart';
@@ -38,31 +37,48 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
           themeMode: ThemeOfApp.theme,
-          home: AnimatedSplashScreen.withScreenFunction(
-            screenFunction: screenFunction,
-            centered: true,
-            splash: IconsAssets.splashIcon,
-            backgroundColor: ColorManager.white,
-            splashTransition: SplashTransition.scaleTransition,
-          ),
+          home: const InitialSplashScreen(),
         );
       },
     );
   }
 }
 
-Future<Widget> screenFunction() async {
-  try {
-    String? myId = await initializeDefaultValues().timeout(
-      const Duration(seconds: 3),
-      onTimeout: () => null,
-    );
+class InitialSplashScreen extends StatefulWidget {
+  const InitialSplashScreen({super.key});
 
-    return myId == null
-        ? const LoginPage()
-        : GetMyPersonalInfo(myPersonalId: myId);
-  } catch (e) {
-    return const LoginPage();
+  @override
+  State<InitialSplashScreen> createState() => _InitialSplashScreenState();
+}
+
+class _InitialSplashScreenState extends State<InitialSplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _navigateToNextScreen();
+  }
+
+  void _navigateToNextScreen() async {
+    // Web platform-e initialization hang kora avoid korar jonno choto delay
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (!mounted) return;
+
+    Get.off(() => const LoginPage(), transition: Transition.noTransition);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: ColorManager.white,
+      body: Center(
+        child: Image.asset(
+          IconsAssets.splashIcon,
+          width: 100,
+          height: 100,
+        ),
+      ),
+    );
   }
 }
 
