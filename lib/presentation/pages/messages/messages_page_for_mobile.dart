@@ -3,7 +3,7 @@ import 'package:instagram/config/routes/app_routes.dart';
 import 'package:instagram/core/utility/constant.dart';
 import 'package:instagram/presentation/pages/messages/select_for_group_chat.dart';
 import 'package:instagram/presentation/pages/messages/widgets/list_of_messages.dart';
-import 'package:instagram/presentation/screens/ai_chat_screen.dart'; // 🤖 AI Chat Screen Import
+import 'package:instagram/presentation/pages/ai/ai_chat_screen.dart'; // 🤖 Correct AI Chat Screen Import //
 
 class MessagesPageForMobile extends StatelessWidget {
   const MessagesPageForMobile({super.key});
