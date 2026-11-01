@@ -78,3 +78,5 @@ flutter:
   assets:
     - assets/icons/
     - assets/splash/
+dependency_overrides:
+  sqflite: ^2.3.3
