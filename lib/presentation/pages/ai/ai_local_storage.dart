@@ -1,33 +1,30 @@
-class AiMessageModel {
-  final String id;
-  final String text;
-  final bool isUser;
-  final DateTime timestamp;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/ai_message_model.dart';
 
-  AiMessageModel({
-    required this.id,
-    required this.text,
-    required this.isUser,
-    required this.timestamp,
-  });
+class AiLocalStorage {
+  static const String _storageKey = 'xrinet_ai_chat_history';
 
-  // Convert to Map for Local Storage (JSON)
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'text': text,
-      'isUser': isUser,
-      'timestamp': timestamp.toIso8601String(),
-    };
+  // Save Messages List Locally
+  static Future<void> saveMessages(List<AiMessageModel> messages) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> jsonList = messages.map((msg) => jsonEncode(msg.toJson())).toList();
+    await prefs.setStringList(_storageKey, jsonList);
   }
 
-  // Create from Map (JSON)
-  factory AiMessageModel.fromJson(Map<String, dynamic> json) {
-    return AiMessageModel(
-      id: json['id'] ?? '',
-      text: json['text'] ?? '',
-      isUser: json['isUser'] ?? false,
-      timestamp: DateTime.parse(json['timestamp']),
-    );
+  // Load Saved Messages
+  static Future<List<AiMessageModel>> loadMessages() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String>? jsonList = prefs.getStringList(_storageKey);
+    
+    if (jsonList == null) return [];
+
+    return jsonList.map((jsonStr) => AiMessageModel.fromJson(jsonDecode(jsonStr))).toList();
+  }
+
+  // Clear History
+  static Future<void> clearHistory() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_storageKey);
   }
 }
