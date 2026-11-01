@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/ai_message_model.dart';
+import 'ai_message_model.dart';
 
 class AiLocalStorage {
   static const String _storageKey = 'xrinet_ai_chat_history';
