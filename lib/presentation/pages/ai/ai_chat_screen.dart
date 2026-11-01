@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/ai_message_model.dart';
+import '../data/ai_controller.dart';
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({Key? key}) : super(key: key);
@@ -8,51 +10,34 @@ class AiChatScreen extends StatefulWidget {
 }
 
 class _AiChatScreenState extends State<AiChatScreen> {
-  final TextEditingController _controller = TextEditingController();
+  final AiController _aiController = AiController();
+  final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  // 📂 Local Chat History List (Ekhane chat messages guli local memory-te store thakbe)
-  final List<ChatMessage> _messages = [
-    ChatMessage(
-      text: "Hello Xriyan! Ami apnar Xrinet AI companion. Ajke ki niye kotha bolbo?",
-      isUser: false,
-      timestamp: DateTime.now(),
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _aiController.addListener(_onAiControllerChanged);
+    _aiController.loadChatHistory();
+  }
+
+  @override
+  void dispose() {
+    _aiController.removeListener(_onAiControllerChanged);
+    _textController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onAiControllerChanged() {
+    setState(() {});
+    _scrollToBottom();
+  }
 
   void _sendMessage() {
-    if (_controller.text.trim().isEmpty) return;
-
-    String userText = _controller.text;
-    _controller.clear();
-
-    setState(() {
-      // User message history-te add holo
-      _messages.add(
-        ChatMessage(
-          text: userText,
-          isUser: true,
-          timestamp: DateTime.now(),
-        ),
-      );
-    });
-
-    _scrollToBottom();
-
-    // Future-e ekhane real API ba response integration kora jabe
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
-      setState(() {
-        _messages.add(
-          ChatMessage(
-            text: "Bujhte perechi! '$userText' er byapare porobortite API connect kore dewa hobe.",
-            isUser: false,
-            timestamp: DateTime.now(),
-          ),
-        );
-      });
-      _scrollToBottom();
-    });
+    if (_textController.text.trim().isEmpty) return;
+    _aiController.sendMessage(_textController.text);
+    _textController.clear();
   }
 
   void _scrollToBottom() {
@@ -114,6 +99,13 @@ class _AiChatScreenState extends State<AiChatScreen> {
           ],
         ),
         iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_sweep_rounded, color: Colors.grey),
+            onPressed: () => _aiController.clearChat(),
+            tooltip: "Clear Chat History",
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -121,13 +113,24 @@ class _AiChatScreenState extends State<AiChatScreen> {
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: _messages.length,
+              itemCount: _aiController.messages.length,
               itemBuilder: (context, index) {
-                final message = _messages[index];
+                final message = _aiController.messages[index];
                 return ChatBubble(message: message);
               },
             ),
           ),
+          if (_aiController.isLoading)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Xrinet AI is typing...",
+                  style: TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic),
+                ),
+              ),
+            ),
           // Bottom Input Bar
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -136,7 +139,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.mic_rounded, color: Colors.white70),
-                  onPressed: () {},
+                  onPressed: () {
+                    // Voice note handler hook-up here
+                  },
                 ),
                 Expanded(
                   child: Container(
@@ -146,7 +151,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
                       borderRadius: BorderRadius.circular(24),
                     ),
                     child: TextField(
-                      controller: _controller,
+                      controller: _textController,
                       style: const TextStyle(color: Colors.white, fontSize: 14),
                       decoration: InputDecoration(
                         hintText: "Message Xrinet AI...",
@@ -178,20 +183,8 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 }
 
-class ChatMessage {
-  final String text;
-  final bool isUser;
-  final DateTime timestamp;
-
-  ChatMessage({
-    required this.text,
-    required this.isUser,
-    required this.timestamp,
-  });
-}
-
 class ChatBubble extends StatelessWidget {
-  final ChatMessage message;
+  final AiMessageModel message;
 
   const ChatBubble({Key? key, required this.message}) : super(key: key);
 
