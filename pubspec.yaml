@@ -153,4 +153,5 @@ flutter:
   flutter:
     sdk: flutter
   shared_preferences: ^2.2.2
-  google_generative_ai: ^0.4.6 # 🤖 Gemini AI API Package
+  http: ^1.2.0 # 🌐 HTTP request korar jonno
+
