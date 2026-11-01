@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart'; // 👈 Dotenv import kora holo
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'ai_message_model.dart';
-import 'ai_local_storage.dart';
+import 'package:instagram/presentation/pages/ai/ai_message_model.dart';
+import 'package:instagram/presentation/pages/ai/ai_local_storage.dart';
 
 class AiController extends ChangeNotifier {
   List<AiMessageModel> _messages = [];
@@ -12,11 +12,9 @@ class AiController extends ChangeNotifier {
   List<AiMessageModel> get messages => _messages;
   bool get isLoading => _isLoading;
 
-  // 🔑 Securely load API key from .env file
   static String get _apiKey => dotenv.env['GROQ_API_KEY'] ?? '';
   static const String _url = 'https://api.groq.com/openai/v1/chat/completions';
 
-  // Load initial history from local storage
   Future<void> loadChatHistory() async {
     _messages = await AiLocalStorage.loadMessages();
     
@@ -34,7 +32,6 @@ class AiController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Send Message & Call Groq API
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
@@ -60,7 +57,7 @@ class AiController extends ChangeNotifier {
           'Authorization': 'Bearer $_apiKey',
         },
         body: jsonEncode({
-          "model": "llama3-70b-8192", // Fast & smart open-source model
+          "model": "llama3-70b-8192",
           "messages": [
             {
               "role": "system",
@@ -111,7 +108,6 @@ class AiController extends ChangeNotifier {
     }
   }
 
-  // Clear History
   Future<void> clearChat() async {
     await AiLocalStorage.clearHistory();
     _messages.clear();
