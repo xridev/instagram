@@ -1,4 +1,4 @@
-Import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:instagram/config/themes/app_theme.dart';
