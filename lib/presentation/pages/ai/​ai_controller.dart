@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import '../models/ai_message_model.dart';
-import '../data/ai_local_storage.dart';
+import 'ai_message_model.dart';
+import 'ai_local_storage.dart';
+
 
 class AiController extends ChangeNotifier {
   List<AiMessageModel> _messages = [];
