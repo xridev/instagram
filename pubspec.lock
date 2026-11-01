@@ -1256,9 +1256,7 @@ packages:
   pull_to_refresh:
     dependency: "direct main"
     description:
-      path: "."
       ref: "0be096c1a822fb03b38115cd76d1bee7e5afdaa2"
-      resolved-ref: "0be096c1a822fb03b38115cd76d1bee7e5afdaa2"
       url: "https://github.com/peng8350/flutter_pulltorefresh"
     source: git
     version: "2.0.0"
@@ -1643,7 +1641,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  xdg_directories:
+  zag_directories:
     dependency: transitive
     description:
       name: xdg_directories
