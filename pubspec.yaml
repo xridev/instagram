@@ -148,9 +148,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-flutter_native_splash:
-  color: "#000000" # Background color (black)
-  image: "assets/images/instagram-image-splash.png" # Apnar logo-er path
-  android_12:
-    color: "#000000"
-    image: "assets/images/instagram-image-splash.png"
