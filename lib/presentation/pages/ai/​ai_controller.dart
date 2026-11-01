@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // 👈 Dotenv import kora holo
 import 'package:http/http.dart' as http;
 import 'ai_message_model.dart';
 import 'ai_local_storage.dart';
@@ -11,8 +12,8 @@ class AiController extends ChangeNotifier {
   List<AiMessageModel> get messages => _messages;
   bool get isLoading => _isLoading;
 
-  // 🔑 Groq Console (console.groq.com) theke free API key niye ekhane bosiye deben
-  static const String _apiKey = 'YOUR_GROQ_API_KEY_HERE';
+  // 🔑 Securely load API key from .env file
+  static String get _apiKey => dotenv.env['GROQ_API_KEY'] ?? '';
   static const String _url = 'https://api.groq.com/openai/v1/chat/completions';
 
   // Load initial history from local storage
