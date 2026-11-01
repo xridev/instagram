@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:instagram/presentation/pages/ai/ai_message_model.dart';
-import 'package:instagram/presentation/pages/ai/ai_controller.dart';
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({Key? key}) : super(key: key);
