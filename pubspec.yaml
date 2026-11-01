@@ -80,3 +80,6 @@ flutter:
     - assets/splash/
 dependency_overrides:
   sqflite: ^2.3.3
+  sqflite_android: ^2.3.6
+  sqflite_common: ^2.5.4
+  sqflite_platform_interface: ^2.3.2
