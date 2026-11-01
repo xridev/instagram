@@ -4,10 +4,12 @@ workflows:
     max_build_duration: 60
     environment:
       flutter: stable
+      android_sdk: 35
     scripts:
       - name: Install Android 36 SDK
         script: |
-          echo "y" | sdkmanager "platforms;android-36" "build-tools;36.0.0"
+          export ANDROID_HOME=$HOME/programs/android-sdk
+          echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-36" "build-tools;36.0.0"
       - name: Get Flutter packages
         script: |
           flutter pub get
