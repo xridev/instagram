@@ -1,5 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 import 'ai_message_model.dart';
 import 'ai_local_storage.dart';
 
@@ -10,14 +11,14 @@ class AiController extends ChangeNotifier {
   List<AiMessageModel> get messages => _messages;
   bool get isLoading => _isLoading;
 
-  // 🔑 Apnar Gemini API Key ekhane bosiye deben (Google AI Studio theke free te paoa jay)
-  static const String _apiKey = 'YOUR_GEMINI_API_KEY_HERE';
+  // 🔑 Groq Console (console.groq.com) theke free API key niye ekhane bosiye deben
+  static const String _apiKey = 'YOUR_GROQ_API_KEY_HERE';
+  static const String _url = 'https://api.groq.com/openai/v1/chat/completions';
 
   // Load initial history from local storage
   Future<void> loadChatHistory() async {
     _messages = await AiLocalStorage.loadMessages();
     
-    // Jodi kono history na thake, tahole default welcome message add hobe
     if (_messages.isEmpty) {
       _messages.add(
         AiMessageModel(
@@ -32,7 +33,7 @@ class AiController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Send Message & Call Real Gemini API
+  // Send Message & Call Groq API
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
@@ -47,35 +48,57 @@ class AiController extends ChangeNotifier {
     notifyListeners();
     await AiLocalStorage.saveMessages(_messages);
 
-    // Call Real AI API
     _isLoading = true;
     notifyListeners();
 
     try {
-      // Initialize Generative Model (Gemini 1.5 Flash is fast & efficient)
-      final model = GenerativeModel(
-        model: 'gemini-1.5-flash',
-        apiKey: _apiKey,
+      final response = await http.post(
+        Uri.parse(_url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
+        body: jsonEncode({
+          "model": "llama3-70b-8192", // Fast & smart open-source model
+          "messages": [
+            {
+              "role": "system",
+              "content": "You are Xrinet AI, a helpful and smart assistant created for Xriyan."
+            },
+            {
+              "role": "user",
+              "content": text
+            }
+          ],
+          "temperature": 0.7,
+        }),
       );
 
-      final content = [Content.text(text)];
-      final response = await model.generateContent(content);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final aiResponseText = data['choices'][0]['message']['content'] ?? "Kono response ashni.";
 
-      final aiResponseText = response.text ?? "Kono response ashni, abar chesta korun.";
+        final aiResponse = AiMessageModel(
+          id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
+          text: aiResponseText,
+          isUser: false,
+          timestamp: DateTime.now(),
+        );
 
-      final aiResponse = AiMessageModel(
-        id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
-        text: aiResponseText,
-        isUser: false,
-        timestamp: DateTime.now(),
-      );
-
-      _messages.add(aiResponse);
+        _messages.add(aiResponse);
+      } else {
+        final errorResponse = AiMessageModel(
+          id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
+          text: "Error: Server error (${response.statusCode}). Abar chesta korun.",
+          isUser: false,
+          timestamp: DateTime.now(),
+        );
+        _messages.add(errorResponse);
+      }
     } catch (e) {
-      // Error handling agar API key ba internet-e problem thake
       final errorResponse = AiMessageModel(
         id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
-        text: "Error: AI response pete somossa hocche. ($e)",
+        text: "Error: Connection problem. ($e)",
         isUser: false,
         timestamp: DateTime.now(),
       );
