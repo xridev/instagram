@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'ai_message_model.dart';
 import 'ai_local_storage.dart';
-
 
 class AiController extends ChangeNotifier {
   List<AiMessageModel> _messages = [];
@@ -9,6 +9,9 @@ class AiController extends ChangeNotifier {
 
   List<AiMessageModel> get messages => _messages;
   bool get isLoading => _isLoading;
+
+  // 🔑 Apnar Gemini API Key ekhane bosiye deben (Google AI Studio theke free te paoa jay)
+  static const String _apiKey = 'YOUR_GEMINI_API_KEY_HERE';
 
   // Load initial history from local storage
   Future<void> loadChatHistory() async {
@@ -29,7 +32,7 @@ class AiController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Send Message & Save to Local Storage
+  // Send Message & Call Real Gemini API
   Future<void> sendMessage(String text) async {
     if (text.trim().isEmpty) return;
 
@@ -44,23 +47,44 @@ class AiController extends ChangeNotifier {
     notifyListeners();
     await AiLocalStorage.saveMessages(_messages);
 
-    // Simulate AI thinking / Response generation (Future-e ekhane API connect hobe)
+    // Call Real AI API
     _isLoading = true;
     notifyListeners();
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      // Initialize Generative Model (Gemini 1.5 Flash is fast & efficient)
+      final model = GenerativeModel(
+        model: 'gemini-1.5-flash',
+        apiKey: _apiKey,
+      );
 
-    final aiResponse = AiMessageModel(
-      id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
-      text: "Bujhte perechi! '$text' er byapare porobortite real-time API connect kora hobe.",
-      isUser: false,
-      timestamp: DateTime.now(),
-    );
+      final content = [Content.text(text)];
+      final response = await model.generateContent(content);
 
-    _messages.add(aiResponse);
-    _isLoading = false;
-    notifyListeners();
-    await AiLocalStorage.saveMessages(_messages);
+      final aiResponseText = response.text ?? "Kono response ashni, abar chesta korun.";
+
+      final aiResponse = AiMessageModel(
+        id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
+        text: aiResponseText,
+        isUser: false,
+        timestamp: DateTime.now(),
+      );
+
+      _messages.add(aiResponse);
+    } catch (e) {
+      // Error handling agar API key ba internet-e problem thake
+      final errorResponse = AiMessageModel(
+        id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
+        text: "Error: AI response pete somossa hocche. ($e)",
+        isUser: false,
+        timestamp: DateTime.now(),
+      );
+      _messages.add(errorResponse);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+      await AiLocalStorage.saveMessages(_messages);
+    }
   }
 
   // Clear History
