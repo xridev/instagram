@@ -11,14 +11,13 @@ plugins {
 
 android {
     namespace = "com.example.instagram"
-    compileSdk = 36
+    compileSdk = 34
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
         isCoreLibraryDesugaringEnabled = true
-
     }
 
     kotlin {
@@ -29,8 +28,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.instagram"
-        minSdk = flutter.minSdkVersion
-        targetSdk = 36
+        minSdk = 21
+        targetSdk = 34
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
@@ -43,8 +42,6 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
     }
@@ -54,30 +51,16 @@ flutter {
     source = "../.."
 }
 
-
-
 dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
 
-    implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
-
-    implementation("com.google.firebase:firebase-analytics-ktx:22.1.0")
+    implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-messaging")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-crashlytics")
 
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     implementation("androidx.multidex:multidex:2.0.1")
-} 
-
-subprojects {
-    afterEvaluate {
-        if (project.hasProperty("android")) {
-            val androidObj = project.extensions.findByName("android") as? com.android.build.gradle.BaseExtension
-            androidObj?.apply {
-                compileSdkVersion(35)
-            }
-        }
-    }
 }
